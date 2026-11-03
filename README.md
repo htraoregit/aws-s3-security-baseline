@@ -1,43 +1,35 @@
 # AWS S3 Security Baseline
 
-## Overview
-A beginner cloud security engineering project demonstrating how Terraform can implement AWS S3 security controls and how Checkov can identify infrastructure misconfigurations before deployment.
+A small hands-on project I built to get more comfortable with AWS security, Terraform, and automated security scanning.
 
-## Technologies
-- AWS S3
-- Terraform
-- AWS KMS
-- Checkov
-- GitHub Actions
+## What I Did
 
-## Security Controls
-- S3 Block Public Access
-- Object Versioning
-- Lifecycle Management
-- Server-Side Encryption using AWS KMS
+I started with a basic S3 bucket configuration and used Checkov to find potential security issues. The first scan flagged 7 failed checks.
 
-## Security Validation
-The initial configuration was scanned using Checkov and identified seven failed checks.
+I then used Terraform to add:
 
-Security controls were then added incrementally, with the configuration rescanned after each change.
+- **S3 Public Access Block** — Prevents accidental public exposure.
+- **Versioning** — Helps recover overwritten or deleted objects.
+- **KMS Encryption** — Encrypts stored objects.
+- **Lifecycle Rules** — Cleans up old versions and incomplete uploads.
 
-See `before-scan.txt` and `after-scan.txt` for the actual findings.
+I also set up GitHub Actions to automatically run Checkov whenever I push changes.
 
-## Compliance References
-Relevant NIST SP 800-53 control concepts include:
+## Results
 
-- AC-3 — Access Enforcement
-- SC-28 — Protection of Information at Rest
-- CM-6 — Configuration Settings
+| | Before | After |
+|---|---|---|
+| Passed checks | 5 | 14 |
+| Failed checks | 7 | 3 |
 
-These references are illustrative mappings, not evidence of full regulatory compliance.
+The three remaining findings involve cross-region replication, access logging, and event notifications. I left those out of the initial scope and documented them in the security report.
 
-## Limitations
-This project demonstrates Terraform configuration and static security analysis. It does not establish production security, successful AWS deployment, or complete regulatory compliance.
+## Tools Used
 
-## Future Improvements
-- IAM least-privilege access
-- S3 access logging
-- CloudTrail data event monitoring
-- Terraform deployment validation
-- Automated compliance evidence reporting
+AWS S3 · Terraform · Checkov · GitHub Actions
+
+## What's Next
+
+I plan to deploy and test the configuration in AWS, then expand into IAM permissions and logging.
+
+This project currently demonstrates Terraform configuration and static security scanning, not a live AWS deployment.
