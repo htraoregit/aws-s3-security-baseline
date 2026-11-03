@@ -56,13 +56,16 @@ resource "aws_s3_bucket_lifecycle_configuration" "secure" {
     noncurrent_version_expiration {
       noncurrent_days = 30
     }
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
   }
 
   depends_on = [
     aws_s3_bucket_versioning.secure
   ]
 }
-
 
 # SECURITY CONTROL 4:
 # Encrypt S3 objects using AWS KMS
