@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.5"
+  required_version = ">= 1.6, < 2.0"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -15,13 +15,33 @@ variable "region" {
 }
 
 variable "bucket_prefix" {
-  description = "Prefix for the data bucket name; the account ID is appended so the name is globally unique"
+  description = "Lowercase name prefix; keep short enough for the region, account and deployment suffix"
   type        = string
   default     = "cloud-security-lab-demo"
+  validation {
+    condition     = can(regex("^[a-z0-9][a-z0-9-]{1,22}[a-z0-9]$", var.bucket_prefix))
+    error_message = "Use 3-24 lowercase letters, digits or hyphens; start and end with a letter or digit."
+  }
+}
+
+variable "deployment_id" {
+  description = "Short identifier that distinguishes deployments in the same account and region"
+  type        = string
+  default     = "demo"
+  validation {
+    condition     = can(regex("^[a-z0-9][a-z0-9-]{0,10}[a-z0-9]$", var.deployment_id))
+    error_message = "Use 2-12 lowercase letters, digits or hyphens; start and end with a letter or digit."
+  }
+}
+
+variable "workload_role_name" {
+  description = "Existing same-account role to receive the data policy; null leaves it unattached"
+  type        = string
+  default     = null
 }
 
 variable "tags" {
-  description = "Tags applied to every resource"
+  description = "Default tags for resources that support tagging"
   type        = map(string)
   default = {
     Project     = "s3-security-baseline"
@@ -39,32 +59,25 @@ provider "aws" {
 }
 
 data "aws_caller_identity" "current" {}
+data "aws_partition" "current" {}
 
 locals {
-  data_bucket = "${var.bucket_prefix}-${data.aws_caller_identity.current.account_id}"
-  logs_bucket = "${var.bucket_prefix}-logs-${data.aws_caller_identity.current.account_id}"
+  data_bucket = "${var.bucket_prefix}-${var.region}-${data.aws_caller_identity.current.account_id}-${var.deployment_id}"
+  logs_bucket = "${local.data_bucket}-logs"
 }
 
-# ---------------------------------------------------------------
-# CONTROL 1: Customer-managed KMS key (encryption at rest)
-# NIST 800-53 SC-28, SC-12, SC-13 | 800-171 3.13.16, 3.13.10, 3.13.11
-# Why a CMK instead of the default AWS-managed key: we control the key
-# policy, rotation, and can audit every use of the key in CloudTrail.
-# Cost: ~$1/month per key plus request charges.
-# ---------------------------------------------------------------
 resource "aws_kms_key" "data" {
   description             = "CMK for the S3 data bucket"
   enable_key_rotation     = true
   deletion_window_in_days = 30
 
-  # Explicit key policy: account root delegates access to IAM, so IAM
-  # policies decide who can use the key. Tighten to named roles for a client.
+  # Allow account IAM policies to delegate access; workload permissions are below.
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
       Sid       = "EnableIAMPolicies"
       Effect    = "Allow"
-      Principal = { AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root" }
+      Principal = { AWS = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:root" }
       Action    = "kms:*"
       Resource  = "*"
     }]
@@ -72,22 +85,25 @@ resource "aws_kms_key" "data" {
 }
 
 resource "aws_kms_alias" "data" {
-  name          = "alias/s3-security-baseline-data"
+  name          = "alias/${local.data_bucket}"
   target_key_id = aws_kms_key.data.key_id
 }
 
-# ---------------------------------------------------------------
-# Data bucket
-# ---------------------------------------------------------------
 resource "aws_s3_bucket" "demo" {
-  bucket = local.data_bucket
+  bucket        = local.data_bucket
+  force_destroy = false
 
-  # checkov:skip=CKV_AWS_144:Cross-region replication is a resilience/DR requirement, not confidentiality. Adds cost and data-residency impact; enable only if the client states an RTO/RPO that needs it.
-  # checkov:skip=CKV2_AWS_62:Event notifications support workflow automation, not baseline security. Not required for this workload.
+  # Lab exceptions. Revisit recovery and event processing before client use.
+  # checkov:skip=CKV_AWS_144:No replication in this lab; recovery design requires client approval.
+  # checkov:skip=CKV2_AWS_62:No event consumer in this lab; audit logging is a separate requirement.
+  lifecycle {
+    precondition {
+      condition     = length(local.logs_bucket) <= 63
+      error_message = "Shorten bucket_prefix or deployment_id so both bucket names fit the 63-character limit."
+    }
+  }
 }
 
-# CONTROL 2: Block all public access
-# NIST 800-53 AC-3, AC-6, SC-7 | 800-171 3.1.1, 3.1.3
 resource "aws_s3_bucket_public_access_block" "secure" {
   bucket = aws_s3_bucket.demo.id
 
@@ -97,8 +113,6 @@ resource "aws_s3_bucket_public_access_block" "secure" {
   restrict_public_buckets = true
 }
 
-# CONTROL 3: Disable ACLs; the bucket owner owns every object
-# NIST 800-53 AC-3 | 800-171 3.1.1
 resource "aws_s3_bucket_ownership_controls" "secure" {
   bucket = aws_s3_bucket.demo.id
 
@@ -107,8 +121,6 @@ resource "aws_s3_bucket_ownership_controls" "secure" {
   }
 }
 
-# CONTROL 4: Versioning (recovery from overwrite/deletion)
-# NIST 800-53 CP-9 | 800-171 (limited coverage)
 resource "aws_s3_bucket_versioning" "secure" {
   bucket = aws_s3_bucket.demo.id
 
@@ -117,7 +129,6 @@ resource "aws_s3_bucket_versioning" "secure" {
   }
 }
 
-# CONTROL 5: Lifecycle (cost control; note 30 days limits recoverability)
 resource "aws_s3_bucket_lifecycle_configuration" "secure" {
   bucket = aws_s3_bucket.demo.id
 
@@ -139,7 +150,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "secure" {
   depends_on = [aws_s3_bucket_versioning.secure]
 }
 
-# CONTROL 6: Encrypt with the customer-managed key
 resource "aws_s3_bucket_server_side_encryption_configuration" "secure" {
   bucket = aws_s3_bucket.demo.id
 
@@ -148,53 +158,76 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "secure" {
       sse_algorithm     = "aws:kms"
       kms_master_key_id = aws_kms_key.data.arn
     }
-    bucket_key_enabled = true # cuts KMS request cost
+    bucket_key_enabled = true
   }
 }
 
-# CONTROL 7: Require TLS for every request
-# NIST 800-53 SC-8, SC-13 (config guidance: SP 800-52) | 800-171 3.13.8
+# Writers must send SSE-KMS and the full key ARN; defaults alone allow overrides.
 resource "aws_s3_bucket_policy" "tls_only" {
   bucket = aws_s3_bucket.demo.id
 
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [{
-      Sid       = "DenyInsecureTransport"
-      Effect    = "Deny"
-      Principal = "*"
-      Action    = "s3:*"
-      Resource = [
-        aws_s3_bucket.demo.arn,
-        "${aws_s3_bucket.demo.arn}/*"
-      ]
-      Condition = {
-        Bool = { "aws:SecureTransport" = "false" }
+    Statement = [
+      {
+        Sid       = "DenyInsecureTransport"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:*"
+        Resource = [
+          aws_s3_bucket.demo.arn,
+          "${aws_s3_bucket.demo.arn}/*"
+        ]
+        Condition = {
+          Bool = {
+            "aws:SecureTransport"       = "false"
+            "aws:PrincipalIsAWSService" = "false"
+          }
+        }
+      },
+      {
+        Sid       = "RequireKMS"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:PutObject"
+        Resource  = "${aws_s3_bucket.demo.arn}/*"
+        Condition = { StringNotEquals = { "s3:x-amz-server-side-encryption" = "aws:kms" } }
+      },
+      {
+        Sid       = "RequireApprovedKey"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:PutObject"
+        Resource  = "${aws_s3_bucket.demo.arn}/*"
+        Condition = { StringNotEquals = { "s3:x-amz-server-side-encryption-aws-kms-key-id" = aws_kms_key.data.arn } }
       }
-    }]
+    ]
   })
 
   depends_on = [aws_s3_bucket_public_access_block.secure]
 }
 
-# CONTROL 8: Server access logging to a separate bucket
-# NIST 800-53 AU-2, AU-12 | 800-171 3.3.1
 resource "aws_s3_bucket_logging" "secure" {
   bucket        = aws_s3_bucket.demo.id
   target_bucket = aws_s3_bucket.logs.id
   target_prefix = "s3-access/"
+  depends_on = [
+    aws_s3_bucket_policy.logs,
+    aws_s3_bucket_ownership_controls.logs,
+    aws_s3_bucket_server_side_encryption_configuration.logs,
+  ]
 }
 
-# ---------------------------------------------------------------
-# Log bucket (hardened separately)
-# ---------------------------------------------------------------
 resource "aws_s3_bucket" "logs" {
-  bucket = local.logs_bucket
+  bucket        = local.logs_bucket
+  force_destroy = false
 
-  # checkov:skip=CKV_AWS_145:S3 server access log delivery does not support SSE-KMS target buckets; SSE-S3 (AES256) is used instead.
-  # checkov:skip=CKV_AWS_18:Logging the log bucket would recurse. Not required.
-  # checkov:skip=CKV_AWS_144:Replication not required for access logs in this scope.
-  # checkov:skip=CKV2_AWS_62:Event notifications not required for access logs.
+  # S3 server-access-log destinations use SSE-S3 and must not log to themselves.
+  # checkov:skip=CKV_AWS_145:SSE-S3 is required for this S3 access-log destination.
+  # checkov:skip=CKV_AWS_18:Do not enable recursive server access logging; use centralized CloudTrail for log access.
+  # checkov:skip=CKV_AWS_144:No log replication in this lab; agree on evidence retention and recovery before client use.
+  # checkov:skip=CKV2_AWS_62:No log event consumer in this lab.
+
 }
 
 resource "aws_s3_bucket_public_access_block" "logs" {
@@ -284,11 +317,50 @@ resource "aws_s3_bucket_policy" "logs" {
           "${aws_s3_bucket.logs.arn}/*"
         ]
         Condition = {
-          Bool = { "aws:SecureTransport" = "false" }
+          Bool = {
+            "aws:SecureTransport"       = "false"
+            "aws:PrincipalIsAWSService" = "false"
+          }
         }
       }
     ]
   })
 
   depends_on = [aws_s3_bucket_public_access_block.logs]
+}
+
+resource "aws_iam_policy" "workload" {
+  name_prefix = "s3-baseline-${var.deployment_id}-"
+  description = "Read and write baseline data without delete or key-administration access"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["s3:ListBucket", "s3:GetBucketLocation"]
+        Resource = aws_s3_bucket.demo.arn
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["s3:GetObject", "s3:GetObjectVersion", "s3:PutObject", "s3:AbortMultipartUpload", "s3:ListMultipartUploadParts"]
+        Resource = "${aws_s3_bucket.demo.arn}/*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["kms:GenerateDataKey", "kms:Decrypt"]
+        Resource = aws_kms_key.data.arn
+        Condition = {
+          StringEquals = { "kms:ViaService" = "s3.${var.region}.${data.aws_partition.current.dns_suffix}" }
+          # Bucket Keys use the bucket ARN; objects without them use object ARNs.
+          StringLike = { "kms:EncryptionContext:aws:s3:arn" = [aws_s3_bucket.demo.arn, "${aws_s3_bucket.demo.arn}/*"] }
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "workload" {
+  count      = var.workload_role_name == null ? 0 : 1
+  role       = var.workload_role_name
+  policy_arn = aws_iam_policy.workload.arn
 }
