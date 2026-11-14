@@ -1,5 +1,5 @@
-.venv/
 .terraform/
+.venv/
 __pycache__/
 *.tfstate
 *.tfstate.*
@@ -8,3 +8,7 @@ __pycache__/
 *.tfvars.json
 crash.log
 crash.*.log
+sample.txt
+downloaded.txt
+recovered.txt
+anonymous.txt

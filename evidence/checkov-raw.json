@@ -1,0 +1,2099 @@
+{
+    "check_type": "terraform",
+    "results": {
+        "passed_checks": [
+            {
+                "check_id": "CKV_AWS_93",
+                "bc_check_id": null,
+                "check_name": "Ensure S3 bucket policy does not lockout all but root user. (Prevent lockouts needing root account fixes)",
+                "check_result": {
+                    "result": "PASSED",
+                    "evaluated_keys": [
+                        "policy"
+                    ]
+                },
+                "code_block": [
+                    [
+                        22,
+                        "resource \"aws_s3_bucket\" \"demo\" {\n"
+                    ],
+                    [
+                        23,
+                        "  bucket_prefix = \"northstar-files-\"\n"
+                    ],
+                    [
+                        24,
+                        "  force_destroy = false\n"
+                    ],
+                    [
+                        25,
+                        "  tags = {\n"
+                    ],
+                    [
+                        26,
+                        "    Project     = \"s3-security-baseline\"\n"
+                    ],
+                    [
+                        27,
+                        "    Company     = \"Northstar Demo\"\n"
+                    ],
+                    [
+                        28,
+                        "    Environment = \"lab\"\n"
+                    ],
+                    [
+                        29,
+                        "  }\n"
+                    ],
+                    [
+                        30,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    22,
+                    30
+                ],
+                "resource": "aws_s3_bucket.demo",
+                "evaluations": null,
+                "check_class": "checkov.terraform.checks.resource.aws.S3ProtectAgainstPolicyLockout",
+                "fixed_definition": null,
+                "entity_tags": {
+                    "Company": "Northstar Demo",
+                    "Environment": "lab",
+                    "Project": "s3-security-baseline"
+                },
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            },
+            {
+                "check_id": "CKV_AWS_53",
+                "bc_check_id": null,
+                "check_name": "Ensure S3 bucket has block public ACLS enabled",
+                "check_result": {
+                    "result": "PASSED",
+                    "evaluated_keys": [
+                        "block_public_acls"
+                    ]
+                },
+                "code_block": [
+                    [
+                        32,
+                        "resource \"aws_s3_bucket_public_access_block\" \"secure\" {\n"
+                    ],
+                    [
+                        33,
+                        "  bucket                  = aws_s3_bucket.demo.id\n"
+                    ],
+                    [
+                        34,
+                        "  block_public_acls       = true\n"
+                    ],
+                    [
+                        35,
+                        "  block_public_policy     = true\n"
+                    ],
+                    [
+                        36,
+                        "  ignore_public_acls      = true\n"
+                    ],
+                    [
+                        37,
+                        "  restrict_public_buckets = true\n"
+                    ],
+                    [
+                        38,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    32,
+                    38
+                ],
+                "resource": "aws_s3_bucket_public_access_block.secure",
+                "evaluations": null,
+                "check_class": "checkov.terraform.checks.resource.aws.S3BlockPublicACLs",
+                "fixed_definition": null,
+                "entity_tags": null,
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            },
+            {
+                "check_id": "CKV_AWS_54",
+                "bc_check_id": null,
+                "check_name": "Ensure S3 bucket has block public policy enabled",
+                "check_result": {
+                    "result": "PASSED",
+                    "evaluated_keys": [
+                        "block_public_policy"
+                    ]
+                },
+                "code_block": [
+                    [
+                        32,
+                        "resource \"aws_s3_bucket_public_access_block\" \"secure\" {\n"
+                    ],
+                    [
+                        33,
+                        "  bucket                  = aws_s3_bucket.demo.id\n"
+                    ],
+                    [
+                        34,
+                        "  block_public_acls       = true\n"
+                    ],
+                    [
+                        35,
+                        "  block_public_policy     = true\n"
+                    ],
+                    [
+                        36,
+                        "  ignore_public_acls      = true\n"
+                    ],
+                    [
+                        37,
+                        "  restrict_public_buckets = true\n"
+                    ],
+                    [
+                        38,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    32,
+                    38
+                ],
+                "resource": "aws_s3_bucket_public_access_block.secure",
+                "evaluations": null,
+                "check_class": "checkov.terraform.checks.resource.aws.S3BlockPublicPolicy",
+                "fixed_definition": null,
+                "entity_tags": null,
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            },
+            {
+                "check_id": "CKV_AWS_55",
+                "bc_check_id": null,
+                "check_name": "Ensure S3 bucket has ignore public ACLs enabled",
+                "check_result": {
+                    "result": "PASSED",
+                    "evaluated_keys": [
+                        "ignore_public_acls"
+                    ]
+                },
+                "code_block": [
+                    [
+                        32,
+                        "resource \"aws_s3_bucket_public_access_block\" \"secure\" {\n"
+                    ],
+                    [
+                        33,
+                        "  bucket                  = aws_s3_bucket.demo.id\n"
+                    ],
+                    [
+                        34,
+                        "  block_public_acls       = true\n"
+                    ],
+                    [
+                        35,
+                        "  block_public_policy     = true\n"
+                    ],
+                    [
+                        36,
+                        "  ignore_public_acls      = true\n"
+                    ],
+                    [
+                        37,
+                        "  restrict_public_buckets = true\n"
+                    ],
+                    [
+                        38,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    32,
+                    38
+                ],
+                "resource": "aws_s3_bucket_public_access_block.secure",
+                "evaluations": null,
+                "check_class": "checkov.terraform.checks.resource.aws.S3IgnorePublicACLs",
+                "fixed_definition": null,
+                "entity_tags": null,
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            },
+            {
+                "check_id": "CKV_AWS_56",
+                "bc_check_id": null,
+                "check_name": "Ensure S3 bucket has 'restrict_public_buckets' enabled",
+                "check_result": {
+                    "result": "PASSED",
+                    "evaluated_keys": [
+                        "restrict_public_buckets"
+                    ]
+                },
+                "code_block": [
+                    [
+                        32,
+                        "resource \"aws_s3_bucket_public_access_block\" \"secure\" {\n"
+                    ],
+                    [
+                        33,
+                        "  bucket                  = aws_s3_bucket.demo.id\n"
+                    ],
+                    [
+                        34,
+                        "  block_public_acls       = true\n"
+                    ],
+                    [
+                        35,
+                        "  block_public_policy     = true\n"
+                    ],
+                    [
+                        36,
+                        "  ignore_public_acls      = true\n"
+                    ],
+                    [
+                        37,
+                        "  restrict_public_buckets = true\n"
+                    ],
+                    [
+                        38,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    32,
+                    38
+                ],
+                "resource": "aws_s3_bucket_public_access_block.secure",
+                "evaluations": null,
+                "check_class": "checkov.terraform.checks.resource.aws.S3RestrictPublicBuckets",
+                "fixed_definition": null,
+                "entity_tags": null,
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            },
+            {
+                "check_id": "CKV_AWS_300",
+                "bc_check_id": null,
+                "check_name": "Ensure S3 lifecycle configuration sets period for aborting failed uploads",
+                "check_result": {
+                    "result": "PASSED",
+                    "evaluated_keys": [
+                        "rule/[0]/abort_incomplete_multipart_upload"
+                    ]
+                },
+                "code_block": [
+                    [
+                        65,
+                        "resource \"aws_s3_bucket_lifecycle_configuration\" \"secure\" {\n"
+                    ],
+                    [
+                        66,
+                        "  bucket = aws_s3_bucket.demo.id\n"
+                    ],
+                    [
+                        67,
+                        "  rule {\n"
+                    ],
+                    [
+                        68,
+                        "    id     = \"cleanup-old-versions\"\n"
+                    ],
+                    [
+                        69,
+                        "    status = \"Enabled\"\n"
+                    ],
+                    [
+                        70,
+                        "    filter {}\n"
+                    ],
+                    [
+                        71,
+                        "    noncurrent_version_expiration {\n"
+                    ],
+                    [
+                        72,
+                        "      noncurrent_days = 30\n"
+                    ],
+                    [
+                        73,
+                        "    }\n"
+                    ],
+                    [
+                        74,
+                        "    abort_incomplete_multipart_upload {\n"
+                    ],
+                    [
+                        75,
+                        "      days_after_initiation = 7\n"
+                    ],
+                    [
+                        76,
+                        "    }\n"
+                    ],
+                    [
+                        77,
+                        "  }\n"
+                    ],
+                    [
+                        78,
+                        "  depends_on = [aws_s3_bucket_versioning.secure]\n"
+                    ],
+                    [
+                        79,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    65,
+                    79
+                ],
+                "resource": "aws_s3_bucket_lifecycle_configuration.secure",
+                "evaluations": null,
+                "check_class": "checkov.terraform.checks.resource.aws.S3AbortIncompleteUploads",
+                "fixed_definition": null,
+                "entity_tags": null,
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            },
+            {
+                "check_id": "CKV_AWS_93",
+                "bc_check_id": null,
+                "check_name": "Ensure S3 bucket policy does not lockout all but root user. (Prevent lockouts needing root account fixes)",
+                "check_result": {
+                    "result": "PASSED",
+                    "evaluated_keys": [
+                        "policy"
+                    ]
+                },
+                "code_block": [
+                    [
+                        81,
+                        "resource \"aws_s3_bucket_policy\" \"tls_only\" {\n"
+                    ],
+                    [
+                        82,
+                        "  bucket = aws_s3_bucket.demo.id\n"
+                    ],
+                    [
+                        83,
+                        "  policy = jsonencode({\n"
+                    ],
+                    [
+                        84,
+                        "    Version = \"2012-10-17\"\n"
+                    ],
+                    [
+                        85,
+                        "    Statement = [\n"
+                    ],
+                    [
+                        86,
+                        "      {\n"
+                    ],
+                    [
+                        87,
+                        "        Sid       = \"DenyHTTP\"\n"
+                    ],
+                    [
+                        88,
+                        "        Effect    = \"Deny\"\n"
+                    ],
+                    [
+                        89,
+                        "        Principal = \"*\"\n"
+                    ],
+                    [
+                        90,
+                        "        Action    = \"s3:*\"\n"
+                    ],
+                    [
+                        91,
+                        "        Resource  = [aws_s3_bucket.demo.arn, \"${aws_s3_bucket.demo.arn}/*\"]\n"
+                    ],
+                    [
+                        92,
+                        "        Condition = {\n"
+                    ],
+                    [
+                        93,
+                        "          Bool = {\n"
+                    ],
+                    [
+                        94,
+                        "            \"aws:SecureTransport\"       = \"false\"\n"
+                    ],
+                    [
+                        95,
+                        "            \"aws:PrincipalIsAWSService\" = \"false\"\n"
+                    ],
+                    [
+                        96,
+                        "          }\n"
+                    ],
+                    [
+                        97,
+                        "        }\n"
+                    ],
+                    [
+                        98,
+                        "      },\n"
+                    ],
+                    [
+                        99,
+                        "      {\n"
+                    ],
+                    [
+                        100,
+                        "        Sid       = \"DenyOldTLS\"\n"
+                    ],
+                    [
+                        101,
+                        "        Effect    = \"Deny\"\n"
+                    ],
+                    [
+                        102,
+                        "        Principal = \"*\"\n"
+                    ],
+                    [
+                        103,
+                        "        Action    = \"s3:*\"\n"
+                    ],
+                    [
+                        104,
+                        "        Resource  = [aws_s3_bucket.demo.arn, \"${aws_s3_bucket.demo.arn}/*\"]\n"
+                    ],
+                    [
+                        105,
+                        "        Condition = {\n"
+                    ],
+                    [
+                        106,
+                        "          NumericLessThan = { \"s3:TlsVersion\" = \"1.2\" }\n"
+                    ],
+                    [
+                        107,
+                        "          Bool            = { \"aws:PrincipalIsAWSService\" = \"false\" }\n"
+                    ],
+                    [
+                        108,
+                        "        }\n"
+                    ],
+                    [
+                        109,
+                        "      },\n"
+                    ],
+                    [
+                        110,
+                        "      {\n"
+                    ],
+                    [
+                        111,
+                        "        Sid       = \"RequireKMSUploads\"\n"
+                    ],
+                    [
+                        112,
+                        "        Effect    = \"Deny\"\n"
+                    ],
+                    [
+                        113,
+                        "        Principal = \"*\"\n"
+                    ],
+                    [
+                        114,
+                        "        Action    = \"s3:PutObject\"\n"
+                    ],
+                    [
+                        115,
+                        "        Resource  = \"${aws_s3_bucket.demo.arn}/*\"\n"
+                    ],
+                    [
+                        116,
+                        "        Condition = {\n"
+                    ],
+                    [
+                        117,
+                        "          StringNotEquals = { \"s3:x-amz-server-side-encryption\" = \"aws:kms\" }\n"
+                    ],
+                    [
+                        118,
+                        "        }\n"
+                    ],
+                    [
+                        119,
+                        "      }\n"
+                    ],
+                    [
+                        120,
+                        "    ]\n"
+                    ],
+                    [
+                        121,
+                        "  })\n"
+                    ],
+                    [
+                        122,
+                        "  depends_on = [aws_s3_bucket_public_access_block.secure]\n"
+                    ],
+                    [
+                        123,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    81,
+                    123
+                ],
+                "resource": "aws_s3_bucket_policy.tls_only",
+                "evaluations": null,
+                "check_class": "checkov.terraform.checks.resource.aws.S3ProtectAgainstPolicyLockout",
+                "fixed_definition": null,
+                "entity_tags": null,
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            },
+            {
+                "check_id": "CKV_AWS_41",
+                "bc_check_id": null,
+                "check_name": "Ensure no hard coded AWS access key and secret key exists in provider",
+                "check_result": {
+                    "result": "PASSED",
+                    "evaluated_keys": []
+                },
+                "code_block": [
+                    [
+                        11,
+                        "provider \"aws\" {\n"
+                    ],
+                    [
+                        12,
+                        "  region = var.region\n"
+                    ],
+                    [
+                        13,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    11,
+                    13
+                ],
+                "resource": "aws.default",
+                "evaluations": null,
+                "check_class": "checkov.terraform.checks.provider.aws.credentials",
+                "fixed_definition": null,
+                "entity_tags": null,
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            },
+            {
+                "check_id": "CKV2_AWS_65",
+                "bc_check_id": null,
+                "check_name": "Ensure access control lists for S3 buckets are disabled",
+                "check_result": {
+                    "result": "PASSED",
+                    "entity": {
+                        "aws_s3_bucket_ownership_controls": {
+                            "secure": {
+                                "__end_line__": 45,
+                                "__start_line__": 40,
+                                "bucket": [
+                                    "aws_s3_bucket.demo.id"
+                                ],
+                                "rule": [
+                                    {
+                                        "object_ownership": [
+                                            "BucketOwnerEnforced"
+                                        ]
+                                    }
+                                ],
+                                "__address__": "aws_s3_bucket_ownership_controls.secure",
+                                "__provider_address__": "aws.default"
+                            }
+                        }
+                    },
+                    "evaluated_keys": [
+                        "rule/object_ownership"
+                    ]
+                },
+                "code_block": [
+                    [
+                        40,
+                        "resource \"aws_s3_bucket_ownership_controls\" \"secure\" {\n"
+                    ],
+                    [
+                        41,
+                        "  bucket = aws_s3_bucket.demo.id\n"
+                    ],
+                    [
+                        42,
+                        "  rule {\n"
+                    ],
+                    [
+                        43,
+                        "    object_ownership = \"BucketOwnerEnforced\"\n"
+                    ],
+                    [
+                        44,
+                        "  }\n"
+                    ],
+                    [
+                        45,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    40,
+                    45
+                ],
+                "resource": "aws_s3_bucket_ownership_controls.secure",
+                "evaluations": null,
+                "check_class": "checkov.common.graph.checks_infra.base_check",
+                "fixed_definition": null,
+                "entity_tags": null,
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            },
+            {
+                "check_id": "CKV2_AWS_61",
+                "bc_check_id": null,
+                "check_name": "Ensure that an S3 bucket has a lifecycle configuration",
+                "check_result": {
+                    "result": "PASSED",
+                    "entity": {
+                        "aws_s3_bucket": {
+                            "demo": {
+                                "__end_line__": 30,
+                                "__start_line__": 22,
+                                "bucket_prefix": [
+                                    "northstar-files-"
+                                ],
+                                "force_destroy": [
+                                    false
+                                ],
+                                "tags": [
+                                    {
+                                        "Company": "Northstar Demo",
+                                        "Environment": "lab",
+                                        "Project": "s3-security-baseline"
+                                    }
+                                ],
+                                "__address__": "aws_s3_bucket.demo",
+                                "__provider_address__": "aws.default"
+                            }
+                        }
+                    },
+                    "evaluated_keys": [
+                        "resource_type",
+                        "lifecycle_rule"
+                    ]
+                },
+                "code_block": [
+                    [
+                        22,
+                        "resource \"aws_s3_bucket\" \"demo\" {\n"
+                    ],
+                    [
+                        23,
+                        "  bucket_prefix = \"northstar-files-\"\n"
+                    ],
+                    [
+                        24,
+                        "  force_destroy = false\n"
+                    ],
+                    [
+                        25,
+                        "  tags = {\n"
+                    ],
+                    [
+                        26,
+                        "    Project     = \"s3-security-baseline\"\n"
+                    ],
+                    [
+                        27,
+                        "    Company     = \"Northstar Demo\"\n"
+                    ],
+                    [
+                        28,
+                        "    Environment = \"lab\"\n"
+                    ],
+                    [
+                        29,
+                        "  }\n"
+                    ],
+                    [
+                        30,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    22,
+                    30
+                ],
+                "resource": "aws_s3_bucket.demo",
+                "evaluations": null,
+                "check_class": "checkov.common.graph.checks_infra.base_check",
+                "fixed_definition": null,
+                "entity_tags": {
+                    "Company": "Northstar Demo",
+                    "Environment": "lab",
+                    "Project": "s3-security-baseline"
+                },
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": {
+                    "code_block": [
+                        [
+                            65,
+                            "resource \"aws_s3_bucket_lifecycle_configuration\" \"secure\" {\n"
+                        ],
+                        [
+                            66,
+                            "  bucket = aws_s3_bucket.demo.id\n"
+                        ],
+                        [
+                            67,
+                            "  rule {\n"
+                        ],
+                        [
+                            68,
+                            "    id     = \"cleanup-old-versions\"\n"
+                        ],
+                        [
+                            69,
+                            "    status = \"Enabled\"\n"
+                        ],
+                        [
+                            70,
+                            "    filter {}\n"
+                        ],
+                        [
+                            71,
+                            "    noncurrent_version_expiration {\n"
+                        ],
+                        [
+                            72,
+                            "      noncurrent_days = 30\n"
+                        ],
+                        [
+                            73,
+                            "    }\n"
+                        ],
+                        [
+                            74,
+                            "    abort_incomplete_multipart_upload {\n"
+                        ],
+                        [
+                            75,
+                            "      days_after_initiation = 7\n"
+                        ],
+                        [
+                            76,
+                            "    }\n"
+                        ],
+                        [
+                            77,
+                            "  }\n"
+                        ],
+                        [
+                            78,
+                            "  depends_on = [aws_s3_bucket_versioning.secure]\n"
+                        ],
+                        [
+                            79,
+                            "}\n"
+                        ]
+                    ],
+                    "file_path": "\\main.tf",
+                    "file_line_range": [
+                        65,
+                        79
+                    ],
+                    "resource": "aws_s3_bucket_lifecycle_configuration.secure",
+                    "entity_tags": {},
+                    "evaluations": null,
+                    "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                    "resource_address": null
+                },
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            },
+            {
+                "check_id": "CKV_AWS_20",
+                "bc_check_id": null,
+                "check_name": "S3 Bucket has an ACL defined which allows public READ access.",
+                "check_result": {
+                    "result": "PASSED",
+                    "entity": {
+                        "aws_s3_bucket": {
+                            "demo": {
+                                "__end_line__": 30,
+                                "__start_line__": 22,
+                                "bucket_prefix": [
+                                    "northstar-files-"
+                                ],
+                                "force_destroy": [
+                                    false
+                                ],
+                                "tags": [
+                                    {
+                                        "Company": "Northstar Demo",
+                                        "Environment": "lab",
+                                        "Project": "s3-security-baseline"
+                                    }
+                                ],
+                                "__address__": "aws_s3_bucket.demo",
+                                "__provider_address__": "aws.default"
+                            }
+                        }
+                    },
+                    "evaluated_keys": [
+                        "access_control_policy/grant",
+                        "access_control_policy/grant/*/grantee/uri",
+                        "acl",
+                        "resource_type",
+                        "access_control_policy"
+                    ]
+                },
+                "code_block": [
+                    [
+                        22,
+                        "resource \"aws_s3_bucket\" \"demo\" {\n"
+                    ],
+                    [
+                        23,
+                        "  bucket_prefix = \"northstar-files-\"\n"
+                    ],
+                    [
+                        24,
+                        "  force_destroy = false\n"
+                    ],
+                    [
+                        25,
+                        "  tags = {\n"
+                    ],
+                    [
+                        26,
+                        "    Project     = \"s3-security-baseline\"\n"
+                    ],
+                    [
+                        27,
+                        "    Company     = \"Northstar Demo\"\n"
+                    ],
+                    [
+                        28,
+                        "    Environment = \"lab\"\n"
+                    ],
+                    [
+                        29,
+                        "  }\n"
+                    ],
+                    [
+                        30,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    22,
+                    30
+                ],
+                "resource": "aws_s3_bucket.demo",
+                "evaluations": null,
+                "check_class": "checkov.common.graph.checks_infra.base_check",
+                "fixed_definition": null,
+                "entity_tags": {
+                    "Company": "Northstar Demo",
+                    "Environment": "lab",
+                    "Project": "s3-security-baseline"
+                },
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            },
+            {
+                "check_id": "CKV_AWS_57",
+                "bc_check_id": null,
+                "check_name": "S3 Bucket has an ACL defined which allows public WRITE access.",
+                "check_result": {
+                    "result": "PASSED",
+                    "entity": {
+                        "aws_s3_bucket": {
+                            "demo": {
+                                "__end_line__": 30,
+                                "__start_line__": 22,
+                                "bucket_prefix": [
+                                    "northstar-files-"
+                                ],
+                                "force_destroy": [
+                                    false
+                                ],
+                                "tags": [
+                                    {
+                                        "Company": "Northstar Demo",
+                                        "Environment": "lab",
+                                        "Project": "s3-security-baseline"
+                                    }
+                                ],
+                                "__address__": "aws_s3_bucket.demo",
+                                "__provider_address__": "aws.default"
+                            }
+                        }
+                    },
+                    "evaluated_keys": [
+                        "access_control_policy/grant",
+                        "access_control_policy/grant/*/grantee/uri",
+                        "acl",
+                        "resource_type",
+                        "access_control_policy",
+                        "access_control_policy/grant/*/permission"
+                    ]
+                },
+                "code_block": [
+                    [
+                        22,
+                        "resource \"aws_s3_bucket\" \"demo\" {\n"
+                    ],
+                    [
+                        23,
+                        "  bucket_prefix = \"northstar-files-\"\n"
+                    ],
+                    [
+                        24,
+                        "  force_destroy = false\n"
+                    ],
+                    [
+                        25,
+                        "  tags = {\n"
+                    ],
+                    [
+                        26,
+                        "    Project     = \"s3-security-baseline\"\n"
+                    ],
+                    [
+                        27,
+                        "    Company     = \"Northstar Demo\"\n"
+                    ],
+                    [
+                        28,
+                        "    Environment = \"lab\"\n"
+                    ],
+                    [
+                        29,
+                        "  }\n"
+                    ],
+                    [
+                        30,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    22,
+                    30
+                ],
+                "resource": "aws_s3_bucket.demo",
+                "evaluations": null,
+                "check_class": "checkov.common.graph.checks_infra.base_check",
+                "fixed_definition": null,
+                "entity_tags": {
+                    "Company": "Northstar Demo",
+                    "Environment": "lab",
+                    "Project": "s3-security-baseline"
+                },
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            },
+            {
+                "check_id": "CKV2_AWS_6",
+                "bc_check_id": null,
+                "check_name": "Ensure that S3 bucket has a Public Access block",
+                "check_result": {
+                    "result": "PASSED",
+                    "entity": {
+                        "aws_s3_bucket": {
+                            "demo": {
+                                "__end_line__": 30,
+                                "__start_line__": 22,
+                                "bucket_prefix": [
+                                    "northstar-files-"
+                                ],
+                                "force_destroy": [
+                                    false
+                                ],
+                                "tags": [
+                                    {
+                                        "Company": "Northstar Demo",
+                                        "Environment": "lab",
+                                        "Project": "s3-security-baseline"
+                                    }
+                                ],
+                                "__address__": "aws_s3_bucket.demo",
+                                "__provider_address__": "aws.default"
+                            }
+                        }
+                    },
+                    "evaluated_keys": [
+                        "resource_type",
+                        "block_public_acls",
+                        "block_public_policy"
+                    ]
+                },
+                "code_block": [
+                    [
+                        22,
+                        "resource \"aws_s3_bucket\" \"demo\" {\n"
+                    ],
+                    [
+                        23,
+                        "  bucket_prefix = \"northstar-files-\"\n"
+                    ],
+                    [
+                        24,
+                        "  force_destroy = false\n"
+                    ],
+                    [
+                        25,
+                        "  tags = {\n"
+                    ],
+                    [
+                        26,
+                        "    Project     = \"s3-security-baseline\"\n"
+                    ],
+                    [
+                        27,
+                        "    Company     = \"Northstar Demo\"\n"
+                    ],
+                    [
+                        28,
+                        "    Environment = \"lab\"\n"
+                    ],
+                    [
+                        29,
+                        "  }\n"
+                    ],
+                    [
+                        30,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    22,
+                    30
+                ],
+                "resource": "aws_s3_bucket.demo",
+                "evaluations": null,
+                "check_class": "checkov.common.graph.checks_infra.base_check",
+                "fixed_definition": null,
+                "entity_tags": {
+                    "Company": "Northstar Demo",
+                    "Environment": "lab",
+                    "Project": "s3-security-baseline"
+                },
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": {
+                    "code_block": [
+                        [
+                            32,
+                            "resource \"aws_s3_bucket_public_access_block\" \"secure\" {\n"
+                        ],
+                        [
+                            33,
+                            "  bucket                  = aws_s3_bucket.demo.id\n"
+                        ],
+                        [
+                            34,
+                            "  block_public_acls       = true\n"
+                        ],
+                        [
+                            35,
+                            "  block_public_policy     = true\n"
+                        ],
+                        [
+                            36,
+                            "  ignore_public_acls      = true\n"
+                        ],
+                        [
+                            37,
+                            "  restrict_public_buckets = true\n"
+                        ],
+                        [
+                            38,
+                            "}\n"
+                        ]
+                    ],
+                    "file_path": "\\main.tf",
+                    "file_line_range": [
+                        32,
+                        38
+                    ],
+                    "resource": "aws_s3_bucket_public_access_block.secure",
+                    "entity_tags": {},
+                    "evaluations": null,
+                    "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                    "resource_address": null
+                },
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            },
+            {
+                "check_id": "CKV_AWS_21",
+                "bc_check_id": null,
+                "check_name": "Ensure all data stored in the S3 bucket have versioning enabled",
+                "check_result": {
+                    "result": "PASSED",
+                    "entity": {
+                        "aws_s3_bucket": {
+                            "demo": {
+                                "__end_line__": 30,
+                                "__start_line__": 22,
+                                "bucket_prefix": [
+                                    "northstar-files-"
+                                ],
+                                "force_destroy": [
+                                    false
+                                ],
+                                "tags": [
+                                    {
+                                        "Company": "Northstar Demo",
+                                        "Environment": "lab",
+                                        "Project": "s3-security-baseline"
+                                    }
+                                ],
+                                "__address__": "aws_s3_bucket.demo",
+                                "__provider_address__": "aws.default"
+                            }
+                        }
+                    },
+                    "evaluated_keys": [
+                        "versioning_configuration/status",
+                        "resource_type",
+                        "versioning/enabled"
+                    ]
+                },
+                "code_block": [
+                    [
+                        22,
+                        "resource \"aws_s3_bucket\" \"demo\" {\n"
+                    ],
+                    [
+                        23,
+                        "  bucket_prefix = \"northstar-files-\"\n"
+                    ],
+                    [
+                        24,
+                        "  force_destroy = false\n"
+                    ],
+                    [
+                        25,
+                        "  tags = {\n"
+                    ],
+                    [
+                        26,
+                        "    Project     = \"s3-security-baseline\"\n"
+                    ],
+                    [
+                        27,
+                        "    Company     = \"Northstar Demo\"\n"
+                    ],
+                    [
+                        28,
+                        "    Environment = \"lab\"\n"
+                    ],
+                    [
+                        29,
+                        "  }\n"
+                    ],
+                    [
+                        30,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    22,
+                    30
+                ],
+                "resource": "aws_s3_bucket.demo",
+                "evaluations": null,
+                "check_class": "checkov.common.graph.checks_infra.base_check",
+                "fixed_definition": null,
+                "entity_tags": {
+                    "Company": "Northstar Demo",
+                    "Environment": "lab",
+                    "Project": "s3-security-baseline"
+                },
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": {
+                    "code_block": [
+                        [
+                            47,
+                            "resource \"aws_s3_bucket_versioning\" \"secure\" {\n"
+                        ],
+                        [
+                            48,
+                            "  bucket = aws_s3_bucket.demo.id\n"
+                        ],
+                        [
+                            49,
+                            "  versioning_configuration {\n"
+                        ],
+                        [
+                            50,
+                            "    status = \"Enabled\"\n"
+                        ],
+                        [
+                            51,
+                            "  }\n"
+                        ],
+                        [
+                            52,
+                            "}\n"
+                        ]
+                    ],
+                    "file_path": "\\main.tf",
+                    "file_line_range": [
+                        47,
+                        52
+                    ],
+                    "resource": "aws_s3_bucket_versioning.secure",
+                    "entity_tags": {},
+                    "evaluations": null,
+                    "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                    "resource_address": null
+                },
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            },
+            {
+                "check_id": "CKV_AWS_145",
+                "bc_check_id": null,
+                "check_name": "Ensure that S3 buckets are encrypted with KMS by default",
+                "check_result": {
+                    "result": "PASSED",
+                    "entity": {
+                        "aws_s3_bucket": {
+                            "demo": {
+                                "__end_line__": 30,
+                                "__start_line__": 22,
+                                "bucket_prefix": [
+                                    "northstar-files-"
+                                ],
+                                "force_destroy": [
+                                    false
+                                ],
+                                "tags": [
+                                    {
+                                        "Company": "Northstar Demo",
+                                        "Environment": "lab",
+                                        "Project": "s3-security-baseline"
+                                    }
+                                ],
+                                "__address__": "aws_s3_bucket.demo",
+                                "__provider_address__": "aws.default"
+                            }
+                        }
+                    },
+                    "evaluated_keys": [
+                        "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm",
+                        "resource_type",
+                        "rule/apply_server_side_encryption_by_default/sse_algorithm"
+                    ]
+                },
+                "code_block": [
+                    [
+                        22,
+                        "resource \"aws_s3_bucket\" \"demo\" {\n"
+                    ],
+                    [
+                        23,
+                        "  bucket_prefix = \"northstar-files-\"\n"
+                    ],
+                    [
+                        24,
+                        "  force_destroy = false\n"
+                    ],
+                    [
+                        25,
+                        "  tags = {\n"
+                    ],
+                    [
+                        26,
+                        "    Project     = \"s3-security-baseline\"\n"
+                    ],
+                    [
+                        27,
+                        "    Company     = \"Northstar Demo\"\n"
+                    ],
+                    [
+                        28,
+                        "    Environment = \"lab\"\n"
+                    ],
+                    [
+                        29,
+                        "  }\n"
+                    ],
+                    [
+                        30,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    22,
+                    30
+                ],
+                "resource": "aws_s3_bucket.demo",
+                "evaluations": null,
+                "check_class": "checkov.common.graph.checks_infra.base_check",
+                "fixed_definition": null,
+                "entity_tags": {
+                    "Company": "Northstar Demo",
+                    "Environment": "lab",
+                    "Project": "s3-security-baseline"
+                },
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": {
+                    "code_block": [
+                        [
+                            55,
+                            "resource \"aws_s3_bucket_server_side_encryption_configuration\" \"secure\" {\n"
+                        ],
+                        [
+                            56,
+                            "  bucket = aws_s3_bucket.demo.id\n"
+                        ],
+                        [
+                            57,
+                            "  rule {\n"
+                        ],
+                        [
+                            58,
+                            "    apply_server_side_encryption_by_default {\n"
+                        ],
+                        [
+                            59,
+                            "      sse_algorithm = \"aws:kms\"\n"
+                        ],
+                        [
+                            60,
+                            "    }\n"
+                        ],
+                        [
+                            61,
+                            "    bucket_key_enabled = true\n"
+                        ],
+                        [
+                            62,
+                            "  }\n"
+                        ],
+                        [
+                            63,
+                            "}\n"
+                        ]
+                    ],
+                    "file_path": "\\main.tf",
+                    "file_line_range": [
+                        55,
+                        63
+                    ],
+                    "resource": "aws_s3_bucket_server_side_encryption_configuration.secure",
+                    "entity_tags": {},
+                    "evaluations": null,
+                    "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                    "resource_address": null
+                },
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            },
+            {
+                "check_id": "CKV_AWS_19",
+                "bc_check_id": null,
+                "check_name": "Ensure all data stored in the S3 bucket is securely encrypted at rest",
+                "check_result": {
+                    "result": "PASSED",
+                    "entity": {
+                        "aws_s3_bucket": {
+                            "demo": {
+                                "__end_line__": 30,
+                                "__start_line__": 22,
+                                "bucket_prefix": [
+                                    "northstar-files-"
+                                ],
+                                "force_destroy": [
+                                    false
+                                ],
+                                "tags": [
+                                    {
+                                        "Company": "Northstar Demo",
+                                        "Environment": "lab",
+                                        "Project": "s3-security-baseline"
+                                    }
+                                ],
+                                "__address__": "aws_s3_bucket.demo",
+                                "__provider_address__": "aws.default"
+                            }
+                        }
+                    },
+                    "evaluated_keys": [
+                        "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm",
+                        "resource_type",
+                        "rule/apply_server_side_encryption_by_default/sse_algorithm"
+                    ]
+                },
+                "code_block": [
+                    [
+                        22,
+                        "resource \"aws_s3_bucket\" \"demo\" {\n"
+                    ],
+                    [
+                        23,
+                        "  bucket_prefix = \"northstar-files-\"\n"
+                    ],
+                    [
+                        24,
+                        "  force_destroy = false\n"
+                    ],
+                    [
+                        25,
+                        "  tags = {\n"
+                    ],
+                    [
+                        26,
+                        "    Project     = \"s3-security-baseline\"\n"
+                    ],
+                    [
+                        27,
+                        "    Company     = \"Northstar Demo\"\n"
+                    ],
+                    [
+                        28,
+                        "    Environment = \"lab\"\n"
+                    ],
+                    [
+                        29,
+                        "  }\n"
+                    ],
+                    [
+                        30,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    22,
+                    30
+                ],
+                "resource": "aws_s3_bucket.demo",
+                "evaluations": null,
+                "check_class": "checkov.common.graph.checks_infra.base_check",
+                "fixed_definition": null,
+                "entity_tags": {
+                    "Company": "Northstar Demo",
+                    "Environment": "lab",
+                    "Project": "s3-security-baseline"
+                },
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": {
+                    "code_block": [
+                        [
+                            55,
+                            "resource \"aws_s3_bucket_server_side_encryption_configuration\" \"secure\" {\n"
+                        ],
+                        [
+                            56,
+                            "  bucket = aws_s3_bucket.demo.id\n"
+                        ],
+                        [
+                            57,
+                            "  rule {\n"
+                        ],
+                        [
+                            58,
+                            "    apply_server_side_encryption_by_default {\n"
+                        ],
+                        [
+                            59,
+                            "      sse_algorithm = \"aws:kms\"\n"
+                        ],
+                        [
+                            60,
+                            "    }\n"
+                        ],
+                        [
+                            61,
+                            "    bucket_key_enabled = true\n"
+                        ],
+                        [
+                            62,
+                            "  }\n"
+                        ],
+                        [
+                            63,
+                            "}\n"
+                        ]
+                    ],
+                    "file_path": "\\main.tf",
+                    "file_line_range": [
+                        55,
+                        63
+                    ],
+                    "resource": "aws_s3_bucket_server_side_encryption_configuration.secure",
+                    "entity_tags": {},
+                    "evaluations": null,
+                    "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                    "resource_address": null
+                },
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            }
+        ],
+        "failed_checks": [
+            {
+                "check_id": "CKV2_AWS_62",
+                "bc_check_id": null,
+                "check_name": "Ensure S3 buckets should have event notifications enabled",
+                "check_result": {
+                    "result": "FAILED",
+                    "entity": {
+                        "aws_s3_bucket": {
+                            "demo": {
+                                "__end_line__": 30,
+                                "__start_line__": 22,
+                                "bucket_prefix": [
+                                    "northstar-files-"
+                                ],
+                                "force_destroy": [
+                                    false
+                                ],
+                                "tags": [
+                                    {
+                                        "Company": "Northstar Demo",
+                                        "Environment": "lab",
+                                        "Project": "s3-security-baseline"
+                                    }
+                                ],
+                                "__address__": "aws_s3_bucket.demo",
+                                "__provider_address__": "aws.default"
+                            }
+                        }
+                    },
+                    "evaluated_keys": [
+                        "resource_type"
+                    ]
+                },
+                "code_block": [
+                    [
+                        22,
+                        "resource \"aws_s3_bucket\" \"demo\" {\n"
+                    ],
+                    [
+                        23,
+                        "  bucket_prefix = \"northstar-files-\"\n"
+                    ],
+                    [
+                        24,
+                        "  force_destroy = false\n"
+                    ],
+                    [
+                        25,
+                        "  tags = {\n"
+                    ],
+                    [
+                        26,
+                        "    Project     = \"s3-security-baseline\"\n"
+                    ],
+                    [
+                        27,
+                        "    Company     = \"Northstar Demo\"\n"
+                    ],
+                    [
+                        28,
+                        "    Environment = \"lab\"\n"
+                    ],
+                    [
+                        29,
+                        "  }\n"
+                    ],
+                    [
+                        30,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    22,
+                    30
+                ],
+                "resource": "aws_s3_bucket.demo",
+                "evaluations": null,
+                "check_class": "checkov.common.graph.checks_infra.base_check",
+                "fixed_definition": null,
+                "entity_tags": {
+                    "Company": "Northstar Demo",
+                    "Environment": "lab",
+                    "Project": "s3-security-baseline"
+                },
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            },
+            {
+                "check_id": "CKV_AWS_18",
+                "bc_check_id": null,
+                "check_name": "Ensure the S3 bucket has access logging enabled",
+                "check_result": {
+                    "result": "FAILED",
+                    "entity": {
+                        "aws_s3_bucket": {
+                            "demo": {
+                                "__end_line__": 30,
+                                "__start_line__": 22,
+                                "bucket_prefix": [
+                                    "northstar-files-"
+                                ],
+                                "force_destroy": [
+                                    false
+                                ],
+                                "tags": [
+                                    {
+                                        "Company": "Northstar Demo",
+                                        "Environment": "lab",
+                                        "Project": "s3-security-baseline"
+                                    }
+                                ],
+                                "__address__": "aws_s3_bucket.demo",
+                                "__provider_address__": "aws.default"
+                            }
+                        }
+                    },
+                    "evaluated_keys": [
+                        "logging",
+                        "resource_type"
+                    ]
+                },
+                "code_block": [
+                    [
+                        22,
+                        "resource \"aws_s3_bucket\" \"demo\" {\n"
+                    ],
+                    [
+                        23,
+                        "  bucket_prefix = \"northstar-files-\"\n"
+                    ],
+                    [
+                        24,
+                        "  force_destroy = false\n"
+                    ],
+                    [
+                        25,
+                        "  tags = {\n"
+                    ],
+                    [
+                        26,
+                        "    Project     = \"s3-security-baseline\"\n"
+                    ],
+                    [
+                        27,
+                        "    Company     = \"Northstar Demo\"\n"
+                    ],
+                    [
+                        28,
+                        "    Environment = \"lab\"\n"
+                    ],
+                    [
+                        29,
+                        "  }\n"
+                    ],
+                    [
+                        30,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    22,
+                    30
+                ],
+                "resource": "aws_s3_bucket.demo",
+                "evaluations": null,
+                "check_class": "checkov.common.graph.checks_infra.base_check",
+                "fixed_definition": null,
+                "entity_tags": {
+                    "Company": "Northstar Demo",
+                    "Environment": "lab",
+                    "Project": "s3-security-baseline"
+                },
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            },
+            {
+                "check_id": "CKV_AWS_144",
+                "bc_check_id": null,
+                "check_name": "Ensure that S3 bucket has cross-region replication enabled",
+                "check_result": {
+                    "result": "FAILED",
+                    "entity": {
+                        "aws_s3_bucket": {
+                            "demo": {
+                                "__end_line__": 30,
+                                "__start_line__": 22,
+                                "bucket_prefix": [
+                                    "northstar-files-"
+                                ],
+                                "force_destroy": [
+                                    false
+                                ],
+                                "tags": [
+                                    {
+                                        "Company": "Northstar Demo",
+                                        "Environment": "lab",
+                                        "Project": "s3-security-baseline"
+                                    }
+                                ],
+                                "__address__": "aws_s3_bucket.demo",
+                                "__provider_address__": "aws.default"
+                            }
+                        }
+                    },
+                    "evaluated_keys": [
+                        "rule/*/status",
+                        "resource_type",
+                        "replication_configuration/rules/*/status"
+                    ]
+                },
+                "code_block": [
+                    [
+                        22,
+                        "resource \"aws_s3_bucket\" \"demo\" {\n"
+                    ],
+                    [
+                        23,
+                        "  bucket_prefix = \"northstar-files-\"\n"
+                    ],
+                    [
+                        24,
+                        "  force_destroy = false\n"
+                    ],
+                    [
+                        25,
+                        "  tags = {\n"
+                    ],
+                    [
+                        26,
+                        "    Project     = \"s3-security-baseline\"\n"
+                    ],
+                    [
+                        27,
+                        "    Company     = \"Northstar Demo\"\n"
+                    ],
+                    [
+                        28,
+                        "    Environment = \"lab\"\n"
+                    ],
+                    [
+                        29,
+                        "  }\n"
+                    ],
+                    [
+                        30,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "\\main.tf",
+                "file_abs_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf",
+                "repo_file_path": "/main.tf",
+                "file_line_range": [
+                    22,
+                    30
+                ],
+                "resource": "aws_s3_bucket.demo",
+                "evaluations": null,
+                "check_class": "checkov.common.graph.checks_infra.base_check",
+                "fixed_definition": null,
+                "entity_tags": {
+                    "Company": "Northstar Demo",
+                    "Environment": "lab",
+                    "Project": "s3-security-baseline"
+                },
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": {},
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": null,
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "C:\\Users\\apote\\Documents\\ChatGPT\\Hanabyte\\simple-s3-release\\main.tf"
+            }
+        ],
+        "skipped_checks": [],
+        "parsing_errors": []
+    },
+    "summary": {
+        "passed": 16,
+        "failed": 3,
+        "skipped": 0,
+        "parsing_errors": 0,
+        "resource_count": 7,
+        "checkov_version": "3.4.3"
+    },
+    "url": "Add an api key '--bc-api-key <api-key>' to see more detailed insights via https://bridgecrew.cloud"
+}
