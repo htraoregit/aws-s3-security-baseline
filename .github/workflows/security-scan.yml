@@ -27,5 +27,5 @@ jobs:
       - run: terraform fmt -check
       - run: terraform init -backend=false -input=false -lockfile=readonly
       - run: terraform validate -no-color
-      # Keep the three demo gaps visible. Any other failed check stops the job.
-      - run: python -m checkov.main -d . --framework terraform --skip-download --soft-fail-on CKV_AWS_18,CKV_AWS_144,CKV2_AWS_62
+      # Resource-specific lab exceptions are documented in main.tf.
+      - run: python -m checkov.main -d . --framework terraform --skip-download
