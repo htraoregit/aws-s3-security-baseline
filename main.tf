@@ -15,7 +15,7 @@ provider "aws" {
 variable "region" {
   description = "Region for the demo."
   type        = string
-  default     = "us-east-1"
+  default     = "us-east-2"
 }
 
 # Terraform adds a suffix so the name is unique.

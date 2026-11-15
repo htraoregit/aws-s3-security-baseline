@@ -1,31 +1,50 @@
-# Security review
+# Security notes
 
-## Local results
+This lab covers private S3 storage, encryption, versioning, and access logging.
+It does not configure employee roles, monitoring alerts, CloudTrail, or independent backups.
 
-| Configuration | Passed | Failed | Skipped |
-|---|---:|---:|---:|
-| Previous single-bucket demo | 16 | 3 | 0 |
-| Current two-bucket demo | 36 | 0 | 6 |
+## Access and encryption
 
-Both scans used Checkov 3.4.3. Resource counts and exceptions differ, so these totals are not a security score. The current scan is saved in `after-scan.txt`; the old numbers describe the previous version, not a separate before fixture in this repository.
+The file bucket rejects HTTP, TLS below 1.2, and uploads without explicit SSE-KMS
+headers naming the project key. Reads require S3 permission and KMS decryption permission.
+The key policy allows the account to delegate key access through IAM policies; it
+does not automatically grant every employee access.
 
-## Exceptions, in priority order
+The log bucket uses SSE-S3, as required for this S3 server-access-log destination.
+Its policy permits the logging service to write logs for the file bucket in the same account.
 
-1. **Audit coverage:** The file bucket has access logging. The log bucket does not log to itself (`CKV_AWS_18`); its own access still needs a separate audit design. S3 access-log delivery is best effort, not a complete audit trail.
-2. **Recovery:** Neither bucket has cross-region replication (`CKV_AWS_144`, two exceptions). Versioning is not an immutable backup.
-3. **Log encryption:** The log bucket uses SSE-S3 instead of KMS (`CKV_AWS_145`), as required for this S3 server-access-log destination.
-4. **Events:** Neither bucket has event notifications (`CKV2_AWS_62`, two exceptions). No event consumer is part of this demo.
+## Checkov exceptions
 
-These six resource-specific skips are visible in the Terraform comments and scan output. They are lab decisions, not approved customer exceptions.
+Six resource-specific exceptions are recorded in the Terraform comments and scan:
 
-## Verified vs. pending
+| Resource | Check | Reason |
+|---|---|---|
+| File bucket | CKV_AWS_144 | Replication is outside this lab. |
+| File bucket | CKV2_AWS_62 | No event consumer is configured. |
+| Log bucket | CKV_AWS_145 | The log destination uses SSE-S3. |
+| Log bucket | CKV_AWS_18 | Avoid recursive logging of the log bucket. |
+| Log bucket | CKV_AWS_144 | Log replication is outside this lab. |
+| Log bucket | CKV2_AWS_62 | No log event consumer is configured. |
 
-**Verified locally:** Terraform formatting and schema validation; Checkov scan. The workflow is configured to repeat these checks; a hosted run is not asserted here.
+Skipped checks are scope decisions, not passed checks.
 
-**Pending in AWS:** Deployment; authorized upload/download; denial of missing encryption headers and wrong keys; anonymous-access rejection; version recovery; actual log delivery. The provisioning and test identities need suitable S3 and KMS permissions; this project creates no workload role or IAM policy.
+## Recovery and cleanup
 
-The key policy allows account IAM policies to grant key access. It does not automatically authorize every employee. This lab assumes a commercial AWS partition and makes no full NIST/CMMC compliance claim.
+Versioning helps recover changed or deleted files, but an authorized administrator
+can still delete versions permanently. Old document versions expire after 30 noncurrent
+days. Current logs expire after 90 days, and their noncurrent versions after another
+30 days. Lifecycle processing is asynchronous.
 
-Replacing an existing AWS-managed encryption default does not re-encrypt old objects. Review the plan and existing data before applying. Both buckets permit destructive cleanup for sample data; KMS deletion is scheduled for 30 days later.
+Both buckets allow Terraform to delete all their contents during destroy. The KMS key
+has a 30-day deletion waiting period. Use sample data only and protect the Terraform state.
+Changing default encryption does not re-encrypt existing objects.
 
-[AWS server access logging requirements and limitations](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerLogs.html)
+## Verification
+
+Terraform formatting and validation pass locally. The saved Checkov report is
+[after-scan.txt](after-scan.txt). AWS deployment status, effective access, version recovery,
+and log delivery have not been verified as part of this cleanup. Server access logging
+is best effort and does not provide a complete audit trail.
+
+[AWS logging requirements](https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html)
+and [S3 KMS permissions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html).
