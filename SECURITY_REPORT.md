@@ -1,33 +1,21 @@
 # Security notes
 
-The file bucket requires HTTPS, TLS 1.2+, and uploads with explicit SSE-KMS headers
-naming the project key. The key policy lets the account grant key access through IAM;
-it does not grant access to every user.
+The goal is simple: keep files private, encrypt them, and keep versions for recovery.
 
-The log bucket uses SSE-S3. Only the S3 logging service is granted write access by
-its bucket policy, restricted to the file bucket and this account.
+The file bucket rejects HTTP, TLS below 1.2, and uploads that do not specify SSE-KMS with the project key. Access still needs the right S3 and KMS permissions.
 
-## Checkov exceptions
+## Scan results
 
-| Resource | Check | Reason |
-|---|---|---|
-| File bucket | CKV_AWS_144 | Replication is outside this lab. |
-| File bucket | CKV2_AWS_62 | No event consumer is configured. |
-| Log bucket | CKV_AWS_145 | The log destination uses SSE-S3. |
-| Log bucket | CKV_AWS_18 | Avoid recursive logging. |
-| Log bucket | CKV_AWS_144 | Replication is outside this lab. |
-| Log bucket | CKV2_AWS_62 | No event consumer is configured. |
+[Checkov output](after-scan.txt): **36 passed, 0 failed, 6 skipped.**
 
-Saved scan: [after-scan.txt](after-scan.txt). Skipped checks are not passed checks.
+The skips are documented in `main.tf`:
+
+- Replication and event notifications are out of scope for both buckets (4 skips).
+- The log bucket uses SSE-S3 instead of KMS (1 skip).
+- The log bucket does not log to itself (1 skip).
 
 ## Limits
 
-- Versioning supports recovery, but an authorized user can permanently delete versions.
-- Old versions expire after 30 noncurrent days. Current logs expire after 90 days.
-- Access logs are best effort, not a complete audit trail.
-- Employee roles, alerts, CloudTrail, and independent backups are outside this lab.
-- Both buckets use `force_destroy = true`; destroying the lab deletes all files and versions.
-- The KMS key has a 30-day deletion waiting period. Keep it while needed data still uses it.
+Versioning is not a backup: someone with permission can permanently delete versions. Old versions expire after 30 noncurrent days; current logs expire after 90 days.
 
-The saved scan checks configuration only; it does not prove live access controls,
-version recovery, or log delivery. The README includes manual tests for those.
+Access logs are best effort. This lab does not include employee roles, alerts, or CloudTrail. The scan checks configuration, not live AWS behavior.

@@ -1,77 +1,30 @@
 # AWS S3 Security Baseline
 
-A Terraform lab for Northstar, a mock company that needs private document storage.
-It creates a file bucket, a separate access-log bucket, and a KMS encryption key.
+A small Terraform lab for Northstar, a mock company that needs private file storage. It creates a file bucket, a log bucket, and a KMS key in `us-east-2`.
 
-## How it works
+## What's included
 
-- Both buckets block public access and disable ACLs. Policies control access.
-- Documents use a customer-managed KMS key with annual rotation.
-- Uploads must specify KMS encryption and the project key.
-- Both buckets require HTTPS. The file bucket also requires TLS 1.2 or later.
-- Versioning keeps earlier copies of documents.
-- S3 sends access logs to the separate bucket, which uses SSE-S3 encryption.
-- Lifecycle rules remove old versions after 30 noncurrent days and incomplete uploads after 7 days. Current logs expire after 90 days.
+- Public access blocked and ACLs disabled on both buckets.
+- KMS encryption for files, with key rotation enabled.
+- HTTPS required on both buckets; TLS 1.2+ on the file bucket.
+- Versioning, access logging, and lifecycle cleanup.
 
-Default region: `us-east-2`. Use an AWS identity with S3 and KMS permissions; this lab does not create employee roles.
+Uploads must specify SSE-KMS and the project key. The log bucket uses SSE-S3.
 
-## Check the configuration
+## Run it
 
-Install Terraform 1.17.1 and Python 3.12 to match GitHub Actions:
+With Terraform installed and AWS credentials configured:
 
 ```powershell
-python -m pip install -r requirements-dev.txt
-terraform init -backend=false -input=false -lockfile=readonly
-terraform fmt -check
+terraform init
 terraform validate
-python -m checkov.main -d . --framework terraform --skip-download
+terraform plan
+terraform apply
+terraform output
 ```
 
-GitHub Actions runs these checks without deploying anything.
-See [after-scan.txt](after-scan.txt) for the saved scan and [security notes](SECURITY_REPORT.md) for its exceptions.
+Review the plan before approving. Outputs give you both bucket names and the KMS key ARN. Your AWS identity needs S3 and KMS permissions.
 
-## Deploy or update
+The [saved Checkov scan](after-scan.txt) has 36 passed checks, 0 failed, and 6 skipped. See [security notes](SECURITY_REPORT.md) for the exceptions.
 
-Sign in to your lab account through AWS CLI, then confirm the identity and review the plan:
-
-```powershell
-aws sts get-caller-identity
-terraform plan -out=deploy.tfplan
-terraform show -no-color deploy.tfplan
-terraform apply deploy.tfplan
-```
-
-Review the plan before applying. Keep state, plans, and credentials out of Git. AWS charges apply.
-
-## Test with a sample document
-
-```powershell
-$bucket = terraform output -raw bucket_name
-$key = terraform output -raw kms_key_arn
-Set-Content sample.txt 'Northstar test document'
-aws s3api put-object --bucket $bucket --key sample.txt --body sample.txt --server-side-encryption aws:kms --ssekms-key-id $key
-aws s3api head-object --bucket $bucket --key sample.txt
-aws s3api get-object --bucket $bucket --key sample.txt downloaded.txt
-Get-Content downloaded.txt
-```
-
-Check that each command succeeds and the metadata shows the project key and a version ID.
-Then test the controls:
-
-- Upload without the encryption flags: expect `AccessDenied`.
-- Download with `--no-sign-request`: expect `AccessDenied`.
-- Overwrite the sample, then download its earlier version from the S3 console.
-- Look for logs under `s3-access/` in the log bucket. Delivery can take hours and is best effort.
-
-## Clean up
-
-**Both buckets have `force_destroy = true`. Destroying the lab permanently deletes their files and versions.**
-Use sample data only, and save anything needed before reviewing a destroy plan:
-
-```powershell
-terraform plan -destroy -out=destroy.tfplan
-terraform show -no-color destroy.tfplan
-terraform apply destroy.tfplan
-```
-
-The KMS key is scheduled for deletion after 30 days. Keep it while any needed data remains encrypted with it.
+Use sample files only. AWS charges apply. `terraform destroy` deletes both buckets and all file versions, and schedules the KMS key for deletion after 30 days.
