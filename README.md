@@ -9,12 +9,11 @@ It creates a file bucket, a separate access-log bucket, and a KMS encryption key
 - Documents use a customer-managed KMS key with annual rotation.
 - Uploads must specify KMS encryption and the project key.
 - Both buckets require HTTPS. The file bucket also requires TLS 1.2 or later.
-- Versioning keeps earlier copies of documents. It does not prevent permanent deletion by an authorized administrator.
+- Versioning keeps earlier copies of documents.
 - S3 sends access logs to the separate bucket, which uses SSE-S3 encryption.
 - Lifecycle rules remove old versions after 30 noncurrent days and incomplete uploads after 7 days. Current logs expire after 90 days.
 
-The default region is `us-east-2`. This project creates no IAM roles or access policies for employees.
-The identity uploading or reading documents needs suitable S3 and KMS permissions.
+Default region: `us-east-2`. Use an AWS identity with S3 and KMS permissions; this lab does not create employee roles.
 
 ## Check the configuration
 
@@ -30,7 +29,6 @@ python -m checkov.main -d . --framework terraform --skip-download
 
 GitHub Actions runs these checks without deploying anything.
 See [after-scan.txt](after-scan.txt) for the saved scan and [security notes](SECURITY_REPORT.md) for its exceptions.
-Local checks do not verify AWS permissions or log delivery.
 
 ## Deploy or update
 
@@ -43,8 +41,7 @@ terraform show -no-color deploy.tfplan
 terraform apply deploy.tfplan
 ```
 
-Use the existing Terraform state and deployment settings. Review any replacement or deletion before applying.
-State files, saved plans, and credentials must stay out of Git. S3 and KMS charges may apply.
+Review the plan before applying. Keep state, plans, and credentials out of Git. AWS charges apply.
 
 ## Test with a sample document
 
@@ -65,8 +62,6 @@ Then test the controls:
 - Download with `--no-sign-request`: expect `AccessDenied`.
 - Overwrite the sample, then download its earlier version from the S3 console.
 - Look for logs under `s3-access/` in the log bucket. Delivery can take hours and is best effort.
-
-These are testing instructions; live AWS results have not been verified in this cleanup.
 
 ## Clean up
 

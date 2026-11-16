@@ -18,7 +18,6 @@ variable "region" {
   default     = "us-east-2"
 }
 
-# Terraform adds a suffix so the name is unique.
 resource "aws_s3_bucket" "demo" {
   # checkov:skip=CKV_AWS_144:Regional replication is outside this lab.
   # checkov:skip=CKV2_AWS_62:No event consumer is configured for this lab.
@@ -32,6 +31,7 @@ resource "aws_s3_bucket" "demo" {
   }
 }
 
+# Public access and ownership
 resource "aws_s3_bucket_public_access_block" "secure" {
   bucket                  = aws_s3_bucket.demo.id
   block_public_acls       = true
@@ -46,14 +46,13 @@ resource "aws_s3_bucket_ownership_controls" "secure" {
     object_ownership = "BucketOwnerEnforced"
   }
 }
-
+# Versioning and encryption
 resource "aws_s3_bucket_versioning" "secure" {
   bucket = aws_s3_bucket.demo.id
   versioning_configuration {
     status = "Enabled"
   }
 }
-
 resource "aws_s3_bucket_server_side_encryption_configuration" "secure" {
   bucket = aws_s3_bucket.demo.id
   rule {
@@ -65,6 +64,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "secure" {
   }
 }
 
+# Retention
 resource "aws_s3_bucket_lifecycle_configuration" "secure" {
   bucket = aws_s3_bucket.demo.id
   rule {
@@ -81,6 +81,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "secure" {
   depends_on = [aws_s3_bucket_versioning.secure]
 }
 
+# Require HTTPS, TLS 1.2+, and uploads encrypted with the project key
 resource "aws_s3_bucket_policy" "tls_only" {
   bucket = aws_s3_bucket.demo.id
   policy = jsonencode({
@@ -134,7 +135,7 @@ resource "aws_s3_bucket_policy" "tls_only" {
   })
   depends_on = [aws_s3_bucket_public_access_block.secure]
 }
-
+# Key management
 resource "aws_kms_key" "data" {
   description             = "Northstar demo file encryption"
   enable_key_rotation     = true
@@ -154,6 +155,7 @@ resource "aws_kms_key" "data" {
 
 data "aws_caller_identity" "current" {}
 
+# Logging
 resource "aws_s3_bucket_logging" "secure" {
   bucket        = aws_s3_bucket.demo.id
   target_bucket = aws_s3_bucket.logs.id
@@ -172,9 +174,8 @@ resource "aws_s3_bucket" "logs" {
   # S3 server-access-log destinations use SSE-S3 and must not log to themselves.
   # checkov:skip=CKV_AWS_145:SSE-S3 is required for this S3 access-log destination.
   # checkov:skip=CKV_AWS_18:Do not enable recursive server access logging; log-bucket access auditing is outside this lab.
-  # checkov:skip=CKV_AWS_144:No log replication in this lab; agree on evidence retention and recovery before client use.
+  # checkov:skip=CKV_AWS_144:Log replication is outside this lab.
   # checkov:skip=CKV2_AWS_62:No log event consumer in this lab.
-
 }
 
 resource "aws_s3_bucket_public_access_block" "logs" {
