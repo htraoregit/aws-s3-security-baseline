@@ -1,19 +1,28 @@
 # AWS S3 Security Baseline
 
-A small Terraform lab for Northstar, a mock company that needs private file storage. It creates a file bucket, a log bucket, and a KMS key in `us-east-2`.
+I built this lab to practice deploying and securing AWS
+infrastructure with Terraform.
 
-## What's included
+The scenario is based on Northstar, a mock company that
+needs secure internal document storage. The infrastructure
+consists of two S3 buckets and a KMS key in us-east-2.
 
-- Public access blocked and ACLs disabled on both buckets.
-- KMS encryption for files, with key rotation enabled.
-- HTTPS required on both buckets; TLS 1.2+ on the file bucket.
-- Versioning, access logging, and lifecycle cleanup.
+## Security Controls
 
-Uploads must specify SSE-KMS and the project key. The log bucket uses SSE-S3.
+- Public access blocked on both buckets
+- ACLs disabled
+- KMS encryption with key rotation for document storage
+- SSE-S3 encryption for the logging bucket
+- HTTPS enforced on both buckets
+- TLS 1.2 or higher required on the document bucket
+- Versioning, access logging and lifecycle rules
 
-## Run it
+File uploads must specify SSE-KMS and the project KMS key.
 
-With Terraform installed and AWS credentials configured:
+## Deployment
+
+Requirements: Terraform and configured AWS credentials
+with the necessary S3 and KMS permissions.
 
 ```powershell
 terraform init
@@ -23,8 +32,30 @@ terraform apply
 terraform output
 ```
 
-Review the plan before approving. Outputs give you both bucket names and the KMS key ARN. Your AWS identity needs S3 and KMS permissions.
+Review the plan before applying. Terraform outputs the
+bucket names and KMS key ARN.
 
-The [saved Checkov scan](after-scan.txt) has 36 passed checks, 0 failed, and 6 skipped. See [security notes](SECURITY_REPORT.md) for the exceptions.
+## Security Testing
 
-Use sample files only. AWS charges apply. `terraform destroy` deletes both buckets and all file versions, and schedules the KMS key for deletion after 30 days.
+I used Checkov to identify misconfigurations and remediate
+security findings in the Terraform code.
+
+Final scan results:
+- 36 passed
+- 0 failed
+- 6 skipped
+
+See [scan results](after-scan.txt) and
+[security notes](SECURITY_REPORT.md) for details.
+
+## Limitations
+
+Versioning helps recover deleted or overwritten files,
+but it is not a replacement for an independent backup.
+
+This is a lab environment. Use sample data only.
+AWS charges apply.
+
+To remove the infrastructure, run `terraform destroy`.
+Non-empty buckets may need to be emptied first, including
+all object versions and delete markers.
